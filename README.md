@@ -20,6 +20,11 @@ In Colab Google Jupyter, for auto install and ensure using latest version of Ten
 
 ## Save a value to graph of TensorBoard
     tbc.save_value("graph_name", "line_name", epoch, value)
+    .
+    .
+    .
+    tbc.flush_line(line_name)
+    tbc.close()
 
 ## Thanks
 ngrok !
