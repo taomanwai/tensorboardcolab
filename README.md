@@ -11,6 +11,7 @@ In Colab Google Jupyter, for auto install and ensure using latest version of Ten
 
 ## Initialization
     tbc=TensorBoardColab()
+After initialization, TensorBoard link will be shown in Colab Google Juyter output
 
 ## Add to Keras callback
     model.fit(x,y,epochs=100000,callbacks=[TensorBoardColabCallback(tbc)])
