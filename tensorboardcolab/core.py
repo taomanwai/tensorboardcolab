@@ -4,31 +4,38 @@ import time
 import os
 import io
 
-
 class TensorBoardColab:
-    def __init__(self, port=6006, graph_path='./Graph'):
+    def __init__(self, port=6006, graph_path='./Graph', startup_waiting_time=5):
         self.port = port
         self.graph_path = graph_path
         self.writer = None
         self.deep_writers = {}
-        get_ipython().system_raw('npm i -s -q -g ngrok')  # !npm i -s -q -g ngrok
-        get_ipython().system_raw('kill -9 $(sudo lsof -t -i:' + str(port) + ')')  # !kill -9 $(sudo lsof -t -i:$port)
-        get_ipython().system_raw('rm -Rf ' + graph_path)  # !rm -Rf $graph_path
+        get_ipython().system_raw('npm i -s -q -g ngrok')
 
-        print('Wait for 5 seconds...')
-        time.sleep(5)
+        setup_passed = False
+        retry_count = 0
+        sleep_time = startup_waiting_time / 3.0
+        while not setup_passed:
+            get_ipython().system_raw('kill -9 $(sudo lsof -t -i:%d)' % port)
+            get_ipython().system_raw('rm -Rf ' + graph_path)
+            print('Wait for %d seconds...' % startup_waiting_time)
+            time.sleep(sleep_time)
+            get_ipython().system_raw('tensorboard --logdir %s --host 0.0.0.0 --port %d &' % (graph_path, port))
+            time.sleep(sleep_time)
+            get_ipython().system_raw('ngrok http %d &' % port)
+            time.sleep(sleep_time)
+            try:
+                tensorboard_link = get_ipython().getoutput(
+                    'curl -s http://localhost:4040/api/tunnels | python3 -c "import sys, json; print(json.load(sys.stdin))"')[
+                    0]
+                tensorboard_link = eval(tensorboard_link)['tunnels'][0]['public_url']
+                setup_passed = True
+            except:
+                setup_passed = False
+                retry_count += 1
+                print('Setup not passed, retry again (%d)' % retry_count)
+                print('\n')
 
-        get_ipython().system_raw(
-            'tensorboard --logdir ' + graph_path + ' --host 0.0.0.0 --port ' + str(port) + ' &'
-        )
-        get_ipython().system_raw('ngrok http ' + str(port) + ' &')
-        #       !curl -s http://localhost:4040/api/tunnels | python3 -c "import sys, json; print(json.load(sys.stdin)['tunnels'][0]['public_url'])"
-        tensorboard_link = get_ipython().getoutput(
-            'curl -s http://localhost:4040/api/tunnels | python3 -c "import sys, json; print(json.load(sys.stdin))"')[0]
-        #       print("TensorBoard json:")
-        #       print(tensorboard_link)
-        tensorboard_link = eval(tensorboard_link)
-        tensorboard_link = tensorboard_link['tunnels'][0]['public_url']
         print("TensorBoard link:")
         print(tensorboard_link)
 
@@ -42,20 +49,17 @@ class TensorBoardColab:
         return self.writer
 
     def get_deep_writers(self, name):
-        if name in self.deep_writers:
-            dummy = 1
-        else:
+        if not (name in self.deep_writers):
             log_path = os.path.join(self.graph_path, name)
             self.deep_writers[name] = tf.summary.FileWriter(log_path)
-
         return self.deep_writers[name]
 
     def save_image(self, title, image):
+        image_path = os.path.join(self.graph_path, 'images')
         summary_op = tf.summary.image(title, image)
         with tf.Session() as sess:
             summary = sess.run(summary_op)
-            # Write summary
-            writer = tf.summary.FileWriter(self.graph_path)
+            writer = tf.summary.FileWriter(image_path)
             writer.add_summary(summary)
             writer.close()
 
@@ -77,3 +81,4 @@ class TensorBoardColab:
         for key in self.deep_writers:
             self.deep_writers[key].close()
         self.deep_writers = {}
+

@@ -2,4 +2,4 @@
 setup.py
 tensorboardcolab/__init__.py
 tensorboardcolab/callbacks.py
-tensorboardcolab/utils.py
+tensorboardcolab/core.py

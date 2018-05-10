@@ -1,7 +1,10 @@
 import tensorflow as tf
 from keras.callbacks import TensorBoard
+import time
 import os
-from utils import TensorBoardColab
+import io
+
+from tensorboardcolab.core import TensorBoardColab
 
 class TensorBoardColabCallback(TensorBoard):
     def __init__(self, tbc=None, write_graph=True, **kwargs):
