@@ -5,7 +5,7 @@ import os
 import io
 
 class TensorBoardColab:
-    def __init__(self, port=6006, graph_path='./Graph', startup_waiting_time=5):
+    def __init__(self, port=6006, graph_path='./Graph', startup_waiting_time=8):
         self.port = port
         self.graph_path = graph_path
         self.writer = None
@@ -33,7 +33,7 @@ class TensorBoardColab:
             except:
                 setup_passed = False
                 retry_count += 1
-                print('Setup not passed, retry again (%d)' % retry_count)
+                print('Initialization failed, retry again (%d)' % retry_count)
                 print('\n')
 
         print("TensorBoard link:")

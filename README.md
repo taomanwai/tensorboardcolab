@@ -12,6 +12,8 @@ In Colab Google Jupyter, for auto install and ensure using latest version of Ten
 ## Initialization
     tbc=TensorBoardColab()
 After initialization, TensorBoard link will be shown in Colab Google Juyter output
+PS: If Initialization failed and keep retrying forever, please increase startup_waiting_time larger than 8 seconds as below
+    tbc=TensorBoardColab(startup_waiting_time=30)
 
 ## Add to Keras callback
     model.fit(x,y,epochs=100000,callbacks=[TensorBoardColabCallback(tbc)])
