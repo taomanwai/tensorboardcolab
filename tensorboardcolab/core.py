@@ -10,7 +10,7 @@ class TensorBoardColab:
         self.graph_path = graph_path
         self.writer = None
         self.deep_writers = {}
-        get_ipython().system_raw('npm i -s -q -g ngrok')
+        get_ipython().system_raw('npm i -s -q --unsafe-perm -g ngrok') #sudo npm i -s -q --unsafe-perm -g ngrok
 
         setup_passed = False
         retry_count = 0

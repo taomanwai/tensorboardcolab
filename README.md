@@ -8,6 +8,12 @@ A library make TensorBoard working in Colab Google
 
 In Colab Google Jupyter, for auto install and ensure using latest version of TensorBoardColab, please add "!pip install -U tensorboardcolab" at the first line of Jupyter cell
 
+## Requirements
+
+    Tensorflow
+    TensorBoard
+    npm
+
 ## Import
 
     from tensorboardcolab import *
