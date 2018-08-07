@@ -23,10 +23,10 @@ class TensorBoardColab:
             time.sleep(sleep_time)
             get_ipython().system_raw('tensorboard --logdir %s --host 0.0.0.0 --port %d &' % (graph_path, port))
             time.sleep(sleep_time)
-            get_ipython().system_raw('lt --port %d >> %s 2>&1 &' % (port,graph_path+'tmp.txt'))
+            get_ipython().system_raw('lt --port %d >> %s 2>&1 &' % (port,graph_path+'/tmp.txt'))
             time.sleep(sleep_time)
             try:
-                tensorboard_link = get_ipython().getoutput('cat tmp.txt')[0].replace('your url is: ','')
+                tensorboard_link = get_ipython().getoutput('cat %s' % (graph_path+'/tmp.txt'))[0].replace('your url is: ','')
                 setup_passed = True
             except:
                 setup_passed = False
