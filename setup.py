@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='tensorboardcolab',
-    version='0.0.12',
+    version='0.0.13',
     packages=['tensorboardcolab'],
     url='https://github.com/taomanwai/tensorboardcolab',
     license='MIT',

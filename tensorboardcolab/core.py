@@ -10,7 +10,7 @@ class TensorBoardColab:
         self.graph_path = graph_path
         self.writer = None
         self.deep_writers = {}
-        get_ipython().system_raw('npm i -s -q --unsafe-perm -g ngrok') #sudo npm i -s -q --unsafe-perm -g ngrok
+        get_ipython().system_raw('npm install -g localtunnel')
 
         setup_passed = False
         retry_count = 0
@@ -18,17 +18,15 @@ class TensorBoardColab:
         while not setup_passed:
             get_ipython().system_raw('kill -9 $(sudo lsof -t -i:%d)' % port)
             get_ipython().system_raw('rm -Rf ' + graph_path)
+            get_ipython().system_raw('mkkdir ' + graph_path)
             print('Wait for %d seconds...' % startup_waiting_time)
             time.sleep(sleep_time)
             get_ipython().system_raw('tensorboard --logdir %s --host 0.0.0.0 --port %d &' % (graph_path, port))
             time.sleep(sleep_time)
-            get_ipython().system_raw('ngrok http %d &' % port)
+            get_ipython().system_raw('lt --port %d >> %s 2>&1 &' % (port,graph_path+'tmp.txt'))
             time.sleep(sleep_time)
             try:
-                tensorboard_link = get_ipython().getoutput(
-                    'curl -s http://localhost:4040/api/tunnels | python3 -c "import sys, json; print(json.load(sys.stdin))"')[
-                    0]
-                tensorboard_link = eval(tensorboard_link)['tunnels'][0]['public_url']
+                tensorboard_link = get_ipython().getoutput('cat tmp.txt')[0].replace('your url is: ','')
                 setup_passed = True
             except:
                 setup_passed = False
